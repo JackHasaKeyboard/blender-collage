@@ -1,5 +1,10 @@
 bl_info = {
     "name": "Render Collage",
+    "author": "JackHasaKeyboard",
+    "version": (1, 0),
+    "blender": (2, 76, 0),
+    "location": "Dynamic Context Menu",
+    "description": "Render a scene with all angles orthographically and a perspective shot",
     "category": "Render"
 }
 
