@@ -1,12 +1,13 @@
 bl_info = {
-    "name": "Render Collage",
-    "author": "JackHasaKeyboard",
-    "version": (1, 0),
-    "blender": (2, 76, 0),
-    "location": "Dynamic Context Menu",
-    "description": "Render a scene with all angles orthographically and a perspective shot",
-    "category": "Render"
-}
+        'name': 'Render Collage',
+        'author': 'JackHasaKeyboard',
+        'version': (1, 0),
+        'blender': (2, 76, 0),
+        'location': 'Dynamic Context Menu',
+        'description': 'Render a scene with all angles orthographically and a perspective shot',
+        'category': 'Render'
+        }
+
 
 import bpy
 from math import radians
@@ -16,54 +17,43 @@ import subprocess
 
 
 class RenderCollage(bpy.types.Operator):
-    """Render a scene with all angles orthographically and a perspective shot"""
-    bl_idname = "render.collage"
-    bl_label = "Render Collage"
+    '''Render a scene with all angles orthographically and a perspective shot'''
+    bl_idname = 'render.collage'
+    bl_label = 'Render Collage'
     bl_options = {'REGISTER'}
 
 
     def execute(self, context):
-        context.scene.render.resolution_x = 250
-        context.scene.render.resolution_y = 250
-        context.scene.render.resolution_percentage = 100
-        context.scene.cycles.samples = 1000
+        scn = context.scene
 
-        orth = {'x': (radians(90), radians(0), radians(90)), 'y': (radians(90), radians(0), radians(180)), 'z': (radians(0), radians(0), radians(180))}
+        scn.render.resolution_x = 500
+        scn.render.resolution_y = 500
+        scn.render.resolution_percentage = 100
+        scn.cycles.samples = 1000
+
+        orth = {'x': (90, 0, 90), 'y': (90, 0, 180), 'z': (0, 0, 180)}
 
         cwd = '%s/Dropbox/3/mad' % os.path.expanduser('~')
         name = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
 
 
-        for ob in context.scene.objects:
+        for ob in scn.objects:
             if ob.type == 'CAMERA':
                 bpy.ops.object.delete()
 
-        # orth
+
         for i, el in enumerate(orth):
             bpy.ops.object.add(type = 'CAMERA', location = (0, 0, 0))
-            
-            ob = context.scene.objects.active
-            
+
+            ob = scn.objects.active
+
             ob.location[i] = 20
-            ob.rotation_euler = orth[el]
-            
-            context.scene.camera = context.scene.objects.active
+            ob.rotation_euler = (radians(orth[el][0]), radians(orth[el][1]), radians(orth[el][2]))
+
+            scn.camera = context.scene.objects.active
 
             bpy.ops.render.render()
             bpy.data.images['Render Result'].save_render('%s/%s.png' % (cwd, el))
-
-        # persp
-        bpy.ops.object.add(type = 'CAMERA')
-            
-        ob = context.scene.objects.active
-
-        ob.location = (-20, 20, 8.75)
-        ob.rotation_euler = (radians(77.5), radians(0), radians(225))
-
-        context.scene.camera = context.scene.objects.active
-
-        bpy.ops.render.render()
-        bpy.data.images['Render Result'].save_render('%s/persp.png' % cwd)
 
 
         # compile
@@ -80,5 +70,5 @@ def unregister():
     bpy.utils.unregister_class(RenderCollage)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     register()
