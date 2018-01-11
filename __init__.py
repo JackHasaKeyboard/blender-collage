@@ -26,14 +26,9 @@ class RenderCollage(bpy.types.Operator):
     def execute(self, context):
         scn = context.scene
 
-        scn.render.resolution_x = 500
-        scn.render.resolution_y = 500
-        scn.render.resolution_percentage = 100
-        scn.cycles.samples = 1000
-
         orth = {'x': (90, 0, 90), 'y': (90, 0, 180), 'z': (0, 0, 180)}
 
-        cwd = '%s/Dropbox/3/mad' % os.path.expanduser('~')
+        cwd = os.path.expanduser('~')
         name = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
 
 
@@ -58,6 +53,7 @@ class RenderCollage(bpy.types.Operator):
 
         # compile
         subprocess.call(['montage', '%s/x.png' % cwd, '%s/y.png' % cwd, '%s/z.png' % cwd, '%s/persp.png' % cwd, '-tile', '2x2', '-geometry', '+0+0', '%s/%s.png' % (cwd, name)])
+        subprocess.call(['rm', '%s/x.png' % cwd, '%s/y.png' % cwd, '%s/z.png' % cwd, '%s/persp.png' % cwd])
 
         return {'FINISHED'}
 
